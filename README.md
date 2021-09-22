@@ -55,5 +55,7 @@ eseguire docker-compose, spostarsi quindi in all'interno di py-tpcc/pytpcc ed es
 
 Comunque è possibile leggere i README presenti all'interno dei progetti scaricati.
 
-Per MySQL, si deve importare l'immagine tpcc_server.tar, spostarsi all'interno di tpcc-runner ed eseguire tpcc.sh
+Per MySQL, si deve importare l'immagine tpcc_server.tar scaricabile dal seguente link
+https://drive.google.com/file/d/15Q5PmDMBM9PGlMrjh6d7oY85E_ueTQBZ/view?usp=sharing
+quindi spostarsi all'interno di tpcc-runner ed eseguire tpcc.sh
 I risultati di questo test è possibile trovarli nella cartella Risultati_TPCC
