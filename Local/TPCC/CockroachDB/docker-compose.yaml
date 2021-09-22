@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+
+  haproxy:
+      container_name: haproxy
+      image: haproxy:latest
+      volumes:
+        - ${PWD}/haproxy/data:/usr/local/etc/haproxy:ro
+      ports:
+        - 26257:26257
+      networks:
+        cockroachdb_network:
+          ipv4_address: 172.28.0.5
+  db1:
+    container_name: node_tpcc_1
+    image: cockroachdb/cockroach:v21.1.7
+    volumes :
+        - ${PWD}/cockroach-data/node1:/cockroach/cockroach-data
+    command: start --insecure  --join=node_tpcc_1,node_tpcc_2,node_tpcc_3 --store=tpcc-local1
+    ports:
+      - 8080:8080
+    networks:
+      cockroachdb_network:
+         aliases:
+             - node_tpcc_1
+
+  db2:
+    container_name: node_tpcc_2
+    image: cockroachdb/cockroach:v21.1.7
+    volumes :
+        - ${PWD}/cockroach-data/node2:/cockroach/cockroach-data
+    command: start --insecure --join=node_tpcc_1,node_tpcc_2,node_tpcc_3 --store=tpcc-local2
+    networks:
+      cockroachdb_network:
+         aliases:
+             - node_tpcc_2
+
+  db3:
+    container_name: node_tpcc_3
+    image: cockroachdb/cockroach:v21.1.7
+    volumes :
+        - ${PWD}/cockroach-data/node3:/cockroach/cockroach-data
+    command: start --insecure --join=node_tpcc_1,node_tpcc_2,node_tpcc_3 --store=tpcc-local3
+    networks:
+      cockroachdb_network:
+         aliases:
+             - node_tpcc_3
+
+networks:
+    cockroachdb_network:
+        driver: bridge

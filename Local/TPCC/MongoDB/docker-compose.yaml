@@ -1,0 +1,160 @@
+version: "3.8"
+
+services:
+
+  cfgsvr1:
+    container_name: tpcc_cfgsvr1
+    image: mongo:latest
+    command: mongod --configsvr --replSet cfgsvr --port 27017 --dbpath /data/db
+    ports:
+      - 40001:27017
+    volumes:
+      - ${PWD}/cfgsvr1:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.2
+        aliases:
+          - tpcc_cfgsvr1
+  cfgsvr2:
+    container_name: tpcc_cfgsvr2
+    image: mongo:latest
+    command: mongod --configsvr --replSet cfgsvr --port 27017 --dbpath /data/db
+    ports:
+      - 40002:27017
+    volumes:
+      - ${PWD}/cfgsvr2:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.3
+        aliases:
+          - tpcc_cfgsvr2
+  cfgsvr3:
+    container_name: tpcc_cfgsvr3
+    image: mongo:latest
+    command: mongod --configsvr --replSet cfgsvr --port 27017 --dbpath /data/db
+    ports:
+      - 40003:27017
+    volumes:
+      - ${PWD}/cfgsvr3:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.4
+        aliases:
+          - tpcc_cfgsvr3
+
+  shard1svr1:
+    container_name: tpcc_shard1svr1
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50001:27017
+    volumes:
+      - ${PWD}/shard1svr1:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.5
+        aliases:
+          - tpcc_shard1svr1
+
+  shard1svr2:
+    container_name: tpcc_shard1svr2
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50002:27017
+    volumes:
+      - ${PWD}/shard1svr2:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.6
+        aliases:
+          - tpcc_shard1svr2
+
+  shard1svr3:
+    container_name: tpcc_shard1svr3
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50003:27017
+    volumes:
+      - ${PWD}/shard1svr3:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.7
+        aliases:
+          - tpcc_shard1svr3
+
+  shard2svr1:
+    container_name: tpcc_shard2svr1
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50004:27017
+    volumes:
+      - ${PWD}/shard2svr1:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.8
+        aliases:
+          - tpcc_shard2svr1
+
+  shard2svr2:
+    container_name: tpcc_shard2svr2
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50005:27017
+    volumes:
+      - ${PWD}/shard2svr2:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.9
+        aliases:
+          - tpcc_shard2svr2
+
+  shard2svr3:
+    container_name: tpcc_shard2svr3
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50006:27017
+    volumes:
+      - ${PWD}/shard2svr3:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.10
+        aliases:
+          - tpcc_shard2svr3
+  mongos:
+    container_name: tpcc_mongos
+    image: mongo:latest
+    command: mongos --configdb cfgrs/130.27.0.2:27017,130.27.0.3:27017,130.27.0.4:27017 --bind_ip 0.0.0.0 --port 27017
+    ports:
+      - 60000:27017
+    volumes:
+      - ${PWD}/mongos:/data/db
+    networks:
+      net_cfgsvr_tpcc:
+        ipv4_address: 130.27.0.20
+        aliases:
+          - tpcc_mongos
+volumes:
+  cfgsvr1: {}
+  cfgsvr2: {}
+  cfgsvr3: {}
+  shard1svr1: {}
+  shard1svr2: {}
+  shard1svr3: {}
+  shard2svr1: {}
+  shard2svr2: {}
+  shard2svr3: {}
+
+
+networks:
+    net_cfgsvr_tpcc:
+        driver: bridge
+        ipam:
+          driver: default
+          config:
+            - subnet: 130.27.0.0/16
+              gateway: 130.27.0.1
