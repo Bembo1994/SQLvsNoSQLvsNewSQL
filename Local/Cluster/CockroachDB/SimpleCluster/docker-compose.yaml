@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+
+  db1:
+    container_name: node1
+    image: cockroachdb/cockroach:v21.1.7
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/SimpleCluster/cockroach-data/node1:/cockroach/cockroach-data
+    command: start --insecure  --join=node1,node2,node3
+    ports:
+      - 26257:26257
+      - 8080:8080
+    networks:
+      cockroachdb_network:
+         aliases:
+             - node1
+
+  db2:
+    container_name: node2
+    image: cockroachdb/cockroach:v21.1.7
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/SimpleCluster/cockroach-data/node2:/cockroach/cockroach-data
+    command: start --insecure --join=node1,node2,node3
+    networks:
+      cockroachdb_network:
+         aliases:
+             - node2
+
+  db3:
+    container_name: node3
+    image: cockroachdb/cockroach:v21.1.7
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/SimpleCluster/cockroach-data/node3:/cockroach/cockroach-data
+    command: start --insecure --join=node1,node2,node3
+    networks:
+      cockroachdb_network:
+         aliases:
+             - node3
+
+networks:
+    cockroachdb_network:
+        driver: bridge

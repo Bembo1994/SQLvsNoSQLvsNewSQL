@@ -1,0 +1,160 @@
+version: "3.8"
+
+services:
+
+  cfgsvr1:
+    container_name: cfgsvr1
+    image: mongo:latest
+    command: mongod --configsvr --replSet cfgsvr --port 27017 --dbpath /data/db
+    ports:
+      - 40001:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/cfgsvr1:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.2
+        aliases:
+          - cfgsvr1
+  cfgsvr2:
+    container_name: cfgsvr2
+    image: mongo:latest
+    command: mongod --configsvr --replSet cfgsvr --port 27017 --dbpath /data/db
+    ports:
+      - 40002:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/cfgsvr2:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.3
+        aliases:
+          - cfgsvr2
+  cfgsvr3:
+    container_name: cfgsvr3
+    image: mongo:latest
+    command: mongod --configsvr --replSet cfgsvr --port 27017 --dbpath /data/db
+    ports:
+      - 40003:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/cfgsvr3:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.4
+        aliases:
+          - cfgsvr4
+
+  shard1svr1:
+    container_name: shard1svr1
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50001:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/shard1svr1:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.5
+        aliases:
+          - shard1svr1
+
+  shard1svr2:
+    container_name: shard1svr2
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50002:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/shard1svr2:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.6
+        aliases:
+          - shard1svr2
+
+  shard1svr3:
+    container_name: shard1svr3
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard1rs --port 27017 --dbpath /data/db
+    ports:
+      - 50003:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/shard1svr3:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.7
+        aliases:
+          - shard1svr3
+
+  shard2svr1:
+    container_name: shard2svr1
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50004:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/shard2svr1:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.8
+        aliases:
+          - shard2svr1
+
+  shard2svr2:
+    container_name: shard2svr2
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50005:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/shard2svr2:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.9
+        aliases:
+          - shard2svr2
+
+  shard2svr3:
+    container_name: shard2svr3
+    image: mongo:latest
+    command: mongod --shardsvr --replSet shard2rs --port 27017 --dbpath /data/db
+    ports:
+      - 50006:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/shard2svr3:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.10
+        aliases:
+          - shard2svr3
+  mongos:
+    container_name: mongos
+    image: mongo:latest
+    command: mongos --configdb cfgrs/10.27.0.2:27017,10.27.0.3:27017,10.27.0.4:27017 --bind_ip 0.0.0.0 --port 27017
+    ports:
+      - 60000:27017
+    volumes:
+      - ${PWD}/Local/Cluster/MongoDB/mongos:/data/db
+    networks:
+      net_cfgsvr:
+        ipv4_address: 10.27.0.20
+        aliases:
+          - mongos
+volumes:
+  cfgsvr1: {}
+  cfgsvr2: {}
+  cfgsvr3: {}
+  shard1svr1: {}
+  shard1svr2: {}
+  shard1svr3: {}
+  shard2svr1: {}
+  shard2svr2: {}
+  shard2svr3: {}
+
+
+networks:
+    net_cfgsvr:
+        driver: bridge
+        ipam:
+          driver: default
+          config:
+            - subnet: 10.27.0.0/16
+              gateway: 10.27.0.1

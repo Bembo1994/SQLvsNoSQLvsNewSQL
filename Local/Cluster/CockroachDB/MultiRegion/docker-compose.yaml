@@ -1,0 +1,324 @@
+version: '3.8'
+services:
+
+  haproxy1:
+      container_name: haproxy1
+      image: haproxy:latest
+      volumes:
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region1/haproxy/data/region1:/usr/local/etc/haproxy:ro
+      ports:
+        - 26257:26257
+      networks:
+        net_region1:
+          ipv4_address: 180.27.0.5
+
+  region1_node1:
+    container_name: r1n1
+    image: cockroachdb/cockroach:latest
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region1/cockroach-data/node1:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region1,zone=a
+    ports:
+      - 8080:8080
+    networks:
+      net_region1:
+         ipv4_address: 180.27.0.2
+         aliases:
+             - r1n1
+      net_r1r2:
+         ipv4_address: 210.27.0.2
+         aliases:
+             - r1n1
+      net_r1r3:
+        ipv4_address: 210.28.0.2
+        aliases:
+          - r1n3
+    extra_hosts:
+      - "r1n1:180.27.0.2"
+      - "r1n2:180.27.0.3"
+      - "r1n3:180.27.0.4"
+
+
+  region1_node2:
+    container_name: r1n2
+    image: cockroachdb/cockroach:latest
+    volumes:
+      - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region1/cockroach-data/node2:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region1,zone=a
+    ports:
+      - 8081:8080
+    networks:
+      net_region1:
+        ipv4_address: 180.27.0.3
+        aliases:
+          - r1n2
+      net_r1r2:
+        ipv4_address: 210.27.0.3
+        aliases:
+          - r1n2
+      net_r1r3:
+        ipv4_address: 210.28.0.3
+        aliases:
+          - r1n3
+    extra_hosts:
+      - "r1n1:180.27.0.2"
+      - "r1n2:180.27.0.3"
+      - "r1n3:180.27.0.4"
+
+  region1_node3:
+    container_name: r1n3
+    image: cockroachdb/cockroach:latest
+    volumes:
+      - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region1/cockroach-data/node3:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region1,zone=a
+    ports:
+      - 8082:8080
+    networks:
+      net_region1:
+        ipv4_address: 180.27.0.4
+        aliases:
+          - r1n3
+      net_r1r2:
+        ipv4_address: 210.27.0.4
+        aliases:
+          - r1n3
+      net_r1r3:
+        ipv4_address: 210.28.0.4
+        aliases:
+          - r1n3
+    extra_hosts:
+      - "r1n1:180.27.0.2"
+      - "r1n2:180.27.0.3"
+      - "r1n3:180.27.0.4"
+
+
+
+  haproxy2:
+      container_name: haproxy2
+      image: haproxy:latest
+      volumes:
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region2/haproxy/data/region2:/usr/local/etc/haproxy:ro
+      ports:
+        - 26258:26257
+      networks:
+        net_region2:
+          ipv4_address: 190.27.0.5
+
+  region2_node1:
+    container_name: r2n1
+    image: cockroachdb/cockroach:latest
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region2/cockroach-data/node1:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region2,zone=b
+    ports:
+      - 8180:8080
+    networks:
+      net_region2:
+         ipv4_address: 190.27.0.2
+         aliases:
+             - r2n1
+      net_r1r2:
+         ipv4_address: 210.27.0.5
+         aliases:
+             - r2n1
+      net_r2r3:
+        ipv4_address: 210.29.0.2
+        aliases:
+          - r2n1
+    extra_hosts:
+      - "r2n1:190.27.0.2"
+      - "r2n2:190.27.0.3"
+      - "r2n3:190.27.0.4"
+
+  region2_node2:
+    container_name: r2n2
+    image: cockroachdb/cockroach:latest
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region2/cockroach-data/node2:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region2,zone=b
+    ports:
+      - 8181:8080
+    networks:
+      net_region2:
+         ipv4_address: 190.27.0.3
+         aliases:
+             - r2n2
+      net_r1r2:
+         ipv4_address: 210.27.0.6
+         aliases:
+             - r2n2
+      net_r2r3:
+        ipv4_address: 210.29.0.3
+        aliases:
+          - r2n2
+    extra_hosts:
+      - "r2n1:190.27.0.2"
+      - "r2n2:190.27.0.3"
+      - "r2n3:190.27.0.4"
+
+  region2_node3:
+    container_name: r2n3
+    image: cockroachdb/cockroach:latest
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region2/cockroach-data/node3:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region3,zone=b
+    ports:
+      - 8182:8080
+    networks:
+      net_region2:
+         ipv4_address: 190.27.0.4
+         aliases:
+             - r2n3
+      net_r1r2:
+         ipv4_address: 210.27.0.7
+         aliases:
+             - r2n3
+      net_r2r3:
+        ipv4_address: 210.29.0.4
+        aliases:
+          - r2n3
+    extra_hosts:
+      - "r2n1:190.27.0.2"
+      - "r2n2:190.27.0.3"
+      - "r2n3:190.27.0.4"
+
+
+
+  haproxy3:
+      container_name: haproxy3
+      image: haproxy:latest
+      volumes:
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region3/haproxy/data/region3:/usr/local/etc/haproxy:ro
+      ports:
+        - 26259:26257
+      networks:
+        net_region3:
+          ipv4_address: 200.27.0.5
+
+  region3_node1:
+    container_name: r3n1
+    image: cockroachdb/cockroach:latest
+    volumes :
+        - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region3/cockroach-data/node1:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region3,zone=c
+    ports:
+      - 8280:8080
+    networks:
+      net_region3:
+         ipv4_address: 200.27.0.2
+         aliases:
+             - r3n1
+      net_r1r3:
+        ipv4_address: 210.28.0.10
+        aliases:
+          - r3n1
+      net_r2r3:
+        ipv4_address: 210.29.0.5
+        aliases:
+          - r3n1
+    extra_hosts:
+      - "r3n1:200.27.0.2"
+      - "r3n2:200.27.0.3"
+      - "r3n3:200.27.0.4"
+
+  region3_node2:
+    container_name: r3n2
+    image: cockroachdb/cockroach:latest
+    volumes:
+      - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region3/cockroach-data/node2:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region3,zone=c
+    ports:
+      - 8281:8080
+    networks:
+      net_region3:
+        ipv4_address: 200.27.0.3
+        aliases:
+          - r3n2
+      net_r1r3:
+        ipv4_address: 210.28.0.11
+        aliases:
+          - r3n2
+      net_r2r3:
+        ipv4_address: 210.29.0.6
+        aliases:
+          - r3n2
+    extra_hosts:
+      - "r2n1:190.27.0.2"
+      - "r2n2:190.27.0.3"
+      - "r2n3:190.27.0.4"
+
+  region3_node3:
+    container_name: r3n3
+    image: cockroachdb/cockroach:latest
+    volumes:
+      - ${PWD}/Local/Cluster/CockroachDB/MultiRegion/region3/cockroach-data/node3:/cockroach/cockroach-data
+    command: start --insecure --join=r1n1,r2n1,r3n1 --locality=region=region3,zone=c
+    ports:
+      - 8282:8080
+    networks:
+      net_region3:
+        ipv4_address: 200.27.0.4
+        aliases:
+          - r3n3
+      net_r1r3:
+        ipv4_address: 210.28.0.12
+        aliases:
+          - r3n3
+      net_r2r3:
+        ipv4_address: 210.29.0.7
+        aliases:
+          - r3n3
+    extra_hosts:
+      - "r3n1:200.27.0.2"
+      - "r3n2:200.27.0.3"
+      - "r3n3:200.27.0.4"
+
+
+networks:
+    net_region1:
+        driver: bridge
+        ipam:
+          driver: default
+          config:
+            - subnet: 180.27.0.0/16
+              gateway: 180.27.0.1
+
+    net_region2:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 190.27.0.0/16
+            gateway: 190.27.0.1
+
+    net_region3:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 200.27.0.0/16
+            gateway: 200.27.0.1
+
+    net_r1r2:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 210.27.0.0/16
+            gateway: 210.27.0.1
+
+    net_r1r3:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 210.28.0.0/16
+            gateway: 210.28.0.1
+
+    net_r2r3:
+      driver: bridge
+      ipam:
+        driver: default
+        config:
+          - subnet: 210.29.0.0/16
+            gateway: 210.29.0.1
