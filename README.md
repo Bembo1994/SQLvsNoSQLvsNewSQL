@@ -37,7 +37,7 @@ comunque i risultati ottenuti sono presenti nella cartella Result_JMeter.
 **Terzo caso d'uso.**
 
 Spostarsi nella cartella Local/TPCC vi è una cartella per ogni tecnologia scegliere quindi la tecnologia dove eseguire 
-il benchmark TPC-C e spostarsi all'interno di essa. Eseguire quindi il file Compose di Docker.
+il benchmark TPC-C e spostarsi all'interno di essa. Eseguire quindi il file Compose di Docker ed impostare server-proxy con indirizzo IP 172.28.0.5.
 Per CockroachDB eseguire i seguenti comandi: 
 
 Init cluster
